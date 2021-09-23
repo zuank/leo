@@ -1,8 +1,12 @@
 import axios from 'axios'
+import {getUserToken} from '../index'
 
+const userToken = getUserToken()
 axios.defaults.timeout = 10000
-axios.defaults.headers.common['user-token'] = '5f9fac1083d773001885e331'
-axios.defaults.headers.common['asset-key'] = '5f9fac1083d773001885e333'
+axios.defaults.headers.common['user-token'] = userToken.userToken
+axios.defaults.headers.common['asset-key'] = userToken.assetKey
+// axios.defaults.headers.common['user-token'] = '5f9fac1083d773001885e331'
+// axios.defaults.headers.common['asset-key'] = '5f9fac1083d773001885e333'
 // 请求拦截
 axios.interceptors.request.use(config => {
   console.log(config)

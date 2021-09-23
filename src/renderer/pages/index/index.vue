@@ -1,6 +1,7 @@
 <template>
-  <div class="wrapper" >
-    <el-card v-for="(item,index) in list" :key="index">
+<div class="wrapper" >
+    <el-input placeholder="输出搜索图片" class="search-input" v-model="searchValue" @change="searchImg"></el-input>
+    <el-card v-for="(item,index) in filterList" :key="index">
       <div class="img-box" v-if="item.mimeType.includes('image')">
         <el-image
             @load="(e)=>imgLoad(e,index)"
@@ -37,10 +38,16 @@ export default {
       bucketName: '',
       key: '',
       list: [],
+      filterList: [],
+      searchValue: '',
       baseImg: 'https://file.40017.cn/wisdomtravel/'
     }
   },
   methods: {
+    searchImg (e) {
+      console.log(e)
+      this.filterList = this.list.filter(_ => _.key.indexOf(e) > -1)
+    },
     copyUrl (str) {
       clipboard.writeText(str, 'selection')
       this.$message({
@@ -49,8 +56,9 @@ export default {
       })
     },
     imgLoad (e, index) {
-      this.$set(this.list[index], 'naturalWidth', e.path[0].naturalWidth)
-      this.$set(this.list[index], 'naturalHeight', e.path[0].naturalHeight)
+      console.log(index)
+      this.$set(this.list[index], 'naturalWidth', (e.path[0] && e.path[0].naturalWidth) || '0')
+      this.$set(this.list[index], 'naturalHeight', (e.path[0] && e.path[0].naturalHeight) || 0)
     },
     async getList () {
       const res = await FetchStaticList({
@@ -59,6 +67,7 @@ export default {
         limit: 10000
       })
       this.list = res.data.result || []
+      this.filterList = this.list
       console.log(res)
     },
     getName (url) {
@@ -74,6 +83,7 @@ export default {
         }
       })
     }
+
   },
   watch: {
     $route () {
@@ -85,16 +95,17 @@ export default {
     }
   },
   created () {
+    this.bucketName = this.$route.query.bucketName || ''
+    this.key = this.$route.query.key || ''
+    this.list = []
+    this.getList()
     console.log(this.$router)
   }
 }
 </script>
 <style>
-.el-card__body {
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
+.box-card >.el-card__body {
+  
 }
 </style>
 <style lang="scss" scoped>
@@ -102,8 +113,13 @@ export default {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
-}
-.el-card {
+  overflow: auto;
+  position: relative;
+  .search-input {
+    position: sticky;
+    top: 0;
+  }
+  .el-card {
   width: 200px;
   height: 291px;
   box-sizing: border-box;
@@ -121,6 +137,7 @@ export default {
     width: 160px;
     margin-bottom: 10px;
   }
+}
 }
 
 </style>

@@ -55,6 +55,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.15.1",
+    "fs": "0.0.1-security",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",
     "vue-masonry": "^0.13.0",
